@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Search | Premium Telemetry Search Box</title>
+    <meta name="description" content="A premium, glassmorphic search box that logs queries directly to Formspree or FormSubmit.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ambient Background Orbs -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </svg>
+                </div>
+                <h1>AURA<span>SEARCH</span></h1>
+            </div>
+            
+            <!-- Settings Trigger -->
+            <button id="settingsToggleBtn" class="icon-btn" title="Configure Form Endpoint" aria-label="Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Search Card -->
+        <main class="search-card">
+            <div class="card-glow"></div>
+            
+            <div class="card-content">
+                <div class="search-intro">
+                    <h2>Intelligence Terminal</h2>
+                    <p>Enter your search query below. Queries are logged to your telemetry endpoint in real-time.</p>
+                </div>
+
+                <!-- Search Form -->
+                <form id="searchForm" action="https://formspree.io/f/xpqvqgra" method="POST" class="search-form">
+                    <div class="search-input-wrapper">
+                        <div class="search-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            name="search_query" 
+                            placeholder="Type security terms, assessment targets..." 
+                            required 
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                        <!-- Keyboard shortcut helper -->
+                        <span class="kb-shortcut">/</span >
+                    </div>
+                    <button type="submit" id="searchSubmitBtn" class="submit-btn">
+                        <span>Search</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </form>
+
+                <!-- Status Overlay (within the card layout) -->
+                <div id="statusIndicator" class="status-indicator hidden">
+                    <div class="status-spinner"></div>
+                    <span id="statusText">Logging telemetry query...</span>
+                </div>
+
+                <!-- Suggestions / Popular Searches -->
+                <div class="suggestions-container">
+                    <span class="section-label">Target Domains:</span>
+                    <div class="suggestion-tags">
+                        <button class="tag">Vulnerability Audit</button>
+                        <button class="tag">Penetration Test</button>
+                        <button class="tag">Zero-Day exploit</button>
+                        <button class="tag">OWASP Top 10</button>
+                    </div>
+                </div>
+
+                <!-- Local Search History -->
+                <div id="historyContainer" class="history-container hidden">
+                    <div class="history-header">
+                        <span class="section-label">Recent Submissions</span>
+                        <button id="clearHistoryBtn" class="text-btn">Clear History</button>
+                    </div>
+                    <ul id="historyList" class="history-list">
+                        <!-- Instantiated via Javascript -->
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <!-- Results Display Panel -->
+        <section id="resultsSection" class="results-section hidden">
+            <div class="results-header">
+                <h3>Search Log Details</h3>
+                <span class="telemetry-badge">Telemetry Captured</span>
+            </div>
+            <div class="results-card">
+                <div class="result-item">
+                    <div class="item-title">Query Executed</div>
+                    <div id="resultQueryVal" class="item-value highlight">N/A</div>
+                </div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="item-title">Target Endpoint</div>
+                        <div id="resultEndpointVal" class="item-value truncate">N/A</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="item-title">Submission Mode</div>
+                        <div id="resultModeVal" class="item-value">AJAX (Background)</div>
+                    </div>
+                </div>
+                <div class="result-item text-block">
+                    <div class="item-title">Telemetry Payload Sent</div>
+                    <pre><code id="resultPayloadVal">{}</code></pre>
+                </div>
+                <div class="success-message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <path d="m9 11 3 3L22 4"></path>
+                    </svg>
+                    <p>Submission logged successfully to Formspree dashboard / FormSubmit email!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration Settings Panel (Drawer Modal) -->
+        <div id="settingsDrawer" class="settings-drawer hidden">
+            <div class="drawer-overlay"></div>
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <h3>Telemetry Configuration</h3>
+                    <button id="settingsCloseBtn" class="icon-btn" aria-label="Close settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="drawer-body">
+                    <div class="form-group">
+                        <label for="serviceSelect">Service Provider</label>
+                        <select id="serviceSelect" class="form-control">
+                            <option value="formspree">Formspree Dashboard</option>
+                            <option value="formsubmit">FormSubmit (Email)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="endpointLabel" for="endpointInput">Formspree Form URL / ID</label>
+                        <input 
+                            type="text" 
+                            id="endpointInput" 
+                            class="form-control" 
+                            placeholder="e.g. https://formspree.io/f/xpqvqgra or xpqvqgra"
+                            value="https://formspree.io/f/xpqvqgra"
+                        >
+                        <p class="help-text">Queries will be posted directly to this target.</p>
+                    </div>
+
+                    <div class="form-group" id="formsubmitExtraGroup">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="captchaToggle" checked>
+                            <span class="checkbox-checkmark"></span>
+                            Enable Spam Protection (Captcha)
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="submissionModeSelect">Submission Execution</label>
+                        <select id="submissionModeSelect" class="form-control">
+                            <option value="ajax">AJAX (Silent background submission)</option>
+                            <option value="redirect">Standard HTML Form Action Redirect</option>
+                        </select>
+                        <p class="help-text">AJAX keeps you on this page and shows instant results. Redirect loads the provider's completion page.</p>
+                    </div>
+
+                    <div class="drawer-actions">
+                        <button id="resetSettingsBtn" class="btn secondary-btn">Reset Default</button>
+                        <button id="saveSettingsBtn" class="btn primary-btn">Save Configuration</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Designed for GitHub Pages hosting. Ready for quick deployment.</p>
+            <p>&copy; 2026 Aura Search System.</p>
+        </footer>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
